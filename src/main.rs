@@ -3,11 +3,6 @@ mod event_finder;
 use std::{fs::OpenOptions, io::Write, os::fd::AsRawFd, time::{Duration, Instant}};
 use evdev::{uinput::VirtualDevice, *};
 
-/*
- * TODO: Add Sigev that ungrabs and brigtness off when prog exits
- *
- * */
-
 #[derive(PartialEq)]
 enum Brightness {
     OFF,
@@ -29,6 +24,7 @@ struct Touchpad {
 const ROWS: usize = 4;
 const COLS: usize = 5;
 const I2C_SLAVE_FORCE: libc::c_ulong = 0x0706;
+const TOUCH_DURATION_MS: u64 = 500;
 
 const NUMPAD_LAYOUT: [[KeyCode; 5]; 4] = [
     [KeyCode::KEY_KP7, KeyCode::KEY_KP8,   KeyCode::KEY_KP9,   KeyCode::KEY_KPSLASH,    KeyCode::KEY_BACKSPACE],
@@ -52,7 +48,7 @@ fn main() {
 
     let numpad = VirtualDevice::builder()
         .unwrap()
-        .name("Numpad")
+        .name("Asus Numpad")
         .with_keys(&keys)
         .unwrap()
         .build().unwrap();
@@ -131,11 +127,19 @@ fn handle_numpad(touchpad: &mut Touchpad) {
     /**** Top Left ****/
     if ((touchpad.x as f64) < 0.06 * (touchpad.max_x as f64)) && ((touchpad.y as f64) < 0.07 * (touchpad.max_y as f64)) {
         dbg!("Top Left");
+        if let None = touchpad.touch_start {
+            return;
+        }
+
+        let elapsed = touchpad.touch_start.unwrap().elapsed(); // Safe unwrap
+        if elapsed < Duration::from_millis(TOUCH_DURATION_MS) {
+            return;
+        }
+
         /*
-         * Current brightness + 1 % 3
-         * if brightness == OFF numlock = false
-         * idk how to change the brightness
+         * Handle Brightness
          * */
+
         return;
     }
 
@@ -146,7 +150,7 @@ fn handle_numpad(touchpad: &mut Touchpad) {
         }
 
         let elapsed = touchpad.touch_start.unwrap().elapsed(); // Safe unwrap
-        if elapsed < Duration::from_secs(1) {
+        if elapsed < Duration::from_millis(TOUCH_DURATION_MS) {
             return;
         }
 
