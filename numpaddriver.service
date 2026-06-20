@@ -1,0 +1,12 @@
+[Unit]
+Description=Numpad for Asus Touchpad
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/qwerty/Programs/rust/NumpadDriver/target/release/NumpadDriver
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
