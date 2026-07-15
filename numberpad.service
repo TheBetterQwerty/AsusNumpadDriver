@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/home/qwerty/Programs/rust/NumpadDriver/target/release/NumpadDriver
+ExecStart=/usr/local/bin/NumberPad
 Restart=always
 RestartSec=1
 

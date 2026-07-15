@@ -1,4 +1,4 @@
-# NumpadDriver
+# NumberPad
 
 A Linux driver for Asus laptop touchpads with an integrated numpad.
 
@@ -21,8 +21,8 @@ This project aims to change that by providing an open-source implementation base
 
 ```bash
 make install
-sudo systemctl start numpaddriver.service
-sudo systemctl enable numpaddriver.service
+sudo systemctl start numberpad.service
+sudo systemctl enable numberpad.service
 ```
 
 ## License

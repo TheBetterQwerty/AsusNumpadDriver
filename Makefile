@@ -1,5 +1,5 @@
-TARGET = NumpadDriver
-SERVICE = numpaddriver.service
+TARGET = NumberPad
+SERVICE = numberpad.service
 
 build:
 	cargo build --release

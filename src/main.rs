@@ -82,10 +82,11 @@ fn main() {
         }
     };
 
-    let mut device = match Device::open(format!("/dev/input/event{}", mouse)) {
+    let dev = format!("/dev/input/event{}", mouse);
+    let mut device = match Device::open(&dev) {
         Ok(x) => x,
         Err(err) => {
-            eprintln!("[!] Error: {err}!");
+            eprintln!("[!] Error: Opening file {} {err}!", dev);
             return;
         }
     };
@@ -100,21 +101,21 @@ fn main() {
     }
 
     let numpad = match VirtualDevice::builder() {
-        Ok(x) => match x.name("Asus Numpad") .with_keys(&keys) {
+        Ok(x) => match x.name("Asus Numpad").with_keys(&keys) {
             Ok(y) => match y.build() {
                 Ok(z) => z,
                 Err(err) => {
-                    eprintln!("[!] Error: {err}!");
+                    eprintln!("[!] Error: Building Device {err}!");
                     return;
                 }
             },
             Err(err) => {
-                eprintln!("[!] Error: {err}!");
+                eprintln!("[!] Error: Building Virtual Name {err}!");
                 return;
             },
         },
         Err(err) => {
-            eprintln!("[!] Error: {err}!");
+            eprintln!("[!] Error: Building Virtual Device {err}!");
             return;
         },
     };
@@ -195,7 +196,6 @@ fn main() {
 fn handle_numpad(touchpad: &mut Touchpad) {
     /**** Top Left ****/
     if ((touchpad.x as f64) < 0.06 * (touchpad.max_x as f64)) && ((touchpad.y as f64) < 0.07 * (touchpad.max_y as f64)) {
-        dbg!("Top left");
         if let None = touchpad.touch_start {
             return;
         }
@@ -227,7 +227,6 @@ fn handle_numpad(touchpad: &mut Touchpad) {
 
     /**** Top Right ****/
     if ((touchpad.x as f64) > 0.95 * (touchpad.max_x as f64)) && ((touchpad.y as f64) < 0.09 * (touchpad.max_y as f64)) {
-        dbg!("Top right");
         if let None = touchpad.touch_start {
             return;
         }
@@ -297,7 +296,7 @@ fn change_brightness(touchpad: &Touchpad) {
     let mut dev = match dev {
         Ok(x) => x,
         Err(err) => {
-            eprintln!("[!] Error: {}", err);
+            eprintln!("[!] Error: Opening file {} {}", path, err);
             return;
         }
     };
